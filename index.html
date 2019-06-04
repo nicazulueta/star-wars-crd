@@ -35,7 +35,9 @@
         }
 
         onCreate (person) {
+          event.preventDefault();
           const people = [...this.state.people, person];
+          // console.log(people)
           this.setState({people});
         }
 
@@ -98,33 +100,26 @@
         constructor () {
           super ();
           this.state = {
-            newPerson: []
+            name: []
           };
-          this.handleSubmit = this.handleSubmit.bind(this);
           this.onChange = this.onChange.bind(this);
         };
 
-        handleSubmit (event) {
-          event.preventDefault();
-          const {people} = this.props;
-          people.push({name: this.state.newPerson})
-          this.props.history.push('/people')
-        }
-
         onChange(event) {
-          this.setState({newPerson: event.target.value});
+          this.setState({name: event.target.value});
         }
 
         render () {
-          const {newPerson} = this.state;
-          const {handleSubmit, onChange} = this;
+          const {name} = this.state;
+          const {onChange} = this;
+          const {onCreate} = this.props;
           return (
             <div>
               <form>
                 <label>
-                  <input type="text" name="name" value={newPerson} onChange={onChange}/>
+                  <input type="text" name="name" value={name} onChange={onChange}/>
                 </label>
-                <button type="submit" onClick={handleSubmit} onCreate={()=> this.props.onCreate({newPerson})}>Create</button>
+                <button type="submit" onClick={()=> onCreate({name})}>Create</button>
               </form>
             </div>
           )
