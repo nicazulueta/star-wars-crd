@@ -1,7 +1,10 @@
 <html>
   <head>
 <style>
-
+  .clicked {
+    background-color: blue;
+    color: white;
+  }
 </style>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js'></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
@@ -23,11 +26,17 @@
             people: []
           };
           this.onDelete = this.onDelete.bind(this);
+          this.onCreate = this.onCreate.bind(this);
         };
 
         onDelete (idx) {
-          const people = this.state.people.filter((person, _idx) => idx !== _idx)
-          this.setState({people})
+          const people = this.state.people.filter((person, _idx) => idx !== _idx);
+          this.setState({people});
+        }
+
+        onCreate (person) {
+          const people = [...this.state.people, person];
+          this.setState({people});
         }
 
         async componentDidMount () {
@@ -36,18 +45,17 @@
           // console.log(people)
           const things = ['Hello'];
           this.setState({people});
-
         };
 
         render () {
           const {people} = this.state;
-          const {onDelete} = this;
+          const {onDelete, onCreate} = this;
           return (
             <HashRouter>
               <Nav people={people}/>
               <Route path='/home' component={Home} />
               <Route path='/people' render={() => <People people={people} onDelete={onDelete}/>}/>
-              <Route path='/create-a-person' render={() => <PersonForm people={people}/>}/>
+              <Route path='/create-a-person' render={({history}) => <PersonForm people={people} onCreate={onCreate} history={history}/>}/>
             </HashRouter>
           );
         };
@@ -100,6 +108,7 @@
           event.preventDefault();
           const {people} = this.props;
           people.push({name: this.state.newPerson})
+          this.props.history.push('/people')
         }
 
         onChange(event) {
@@ -115,7 +124,7 @@
                 <label>
                   <input type="text" name="name" value={newPerson} onChange={onChange}/>
                 </label>
-                <input type="submit" value='Create' onClick={handleSubmit}/>
+                <button type="submit" onClick={handleSubmit} onCreate={()=> this.props.onCreate({newPerson})}>Create</button>
               </form>
             </div>
           )
